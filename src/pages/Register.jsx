@@ -12,8 +12,11 @@ function Register() {
   const handleRegister = async (e) => {
     e.preventDefault();
     try {
+      // Use dynamic API base URL for both development and production
       const res = await axios.post(
-        "http://localhost:5000/api/auth/register",
+        `${
+          import.meta.env.VITE_API_URL || "http://localhost:5000"
+        }/api/auth/register`,
         form
       );
       alert(res.data.message);

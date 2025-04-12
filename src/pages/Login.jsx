@@ -2,23 +2,26 @@ import { useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
-import { setUser } from "../redux/authSlice"; // ✅ import setUser
+import { setUser } from "../redux/authSlice";
 
 function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
-  const dispatch = useDispatch(); // ✅ add this
+  const dispatch = useDispatch();
 
   const handleLogin = async (e) => {
     e.preventDefault();
     try {
-      const res = await axios.post("http://localhost:5000/api/auth/login", {
-        email,
-        password,
-      });
+      // Use dynamic API base URL for both development and production
+      const res = await axios.post(
+        `${
+          import.meta.env.VITE_API_URL || "http://localhost:5000"
+        }/api/auth/login`,
+        { email, password }
+      );
 
-      dispatch(setUser(res.data.user)); // ✅ store user in Redux & localStorage
+      dispatch(setUser(res.data.user)); // Store user in Redux & localStorage
       alert(res.data.message);
       navigate("/dashboard");
     } catch (err) {
