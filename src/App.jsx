@@ -1,4 +1,4 @@
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, useLocation } from "react-router-dom";
 import Home from "./pages/Home";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
@@ -10,25 +10,69 @@ import Messages from "./pages/Messages";
 import Checkout from "./pages/Checkout";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
+import ProtectedRoute from "./components/ProtectedRoute";
 
 function App() {
+  const location = useLocation();
+
+  // Only render Navbar and Footer if we're not on the login or register page
+  const showNavbarAndFooter = !["/login", "/register"].includes(
+    location.pathname
+  );
+
   return (
     <div className="min-h-screen flex flex-col">
-      <Navbar />
+      {showNavbarAndFooter && <Navbar />}
       <div className="flex-grow">
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
-          <Route path="/dashboard" element={<Dashboard />} />
-          <Route path="/list-car" element={<ListCar />} />
+
+          <Route
+            path="/dashboard"
+            element={
+              <ProtectedRoute>
+                <Dashboard />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/list-car"
+            element={
+              <ProtectedRoute>
+                <ListCar />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/bookings"
+            element={
+              <ProtectedRoute>
+                <Bookings />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/messages"
+            element={
+              <ProtectedRoute>
+                <Messages />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/checkout"
+            element={
+              <ProtectedRoute>
+                <Checkout />
+              </ProtectedRoute>
+            }
+          />
           <Route path="/car/:id" element={<CarDetails />} />
-          <Route path="/bookings" element={<Bookings />} />
-          <Route path="/messages" element={<Messages />} />
-          <Route path="/checkout" element={<Checkout />} />
         </Routes>
       </div>
-      <Footer />
+      {showNavbarAndFooter && <Footer />}
     </div>
   );
 }
