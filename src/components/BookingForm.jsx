@@ -1,27 +1,57 @@
 import React, { useState } from "react";
 import API from "../api";
 
-function BookingForm({ car }) {
+function BookingForm({ car, closeModal }) {
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
   const [message, setMessage] = useState("");
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    // Ensure both start and end dates are selected
     if (!startDate || !endDate) {
       setMessage("Please select both start and end dates.");
       return;
     }
 
+    // Ensure the start date is before the end date
+    if (new Date(startDate) >= new Date(endDate)) {
+      setMessage("End date must be after the start date.");
+      return;
+    }
+
+    // Get the token from localStorage
+    const token = localStorage.getItem("token");
+    if (!token) {
+      setMessage("Authorization token is missing. Please log in again.");
+      return;
+    }
+
     try {
-      await API.post("/bookings", {
-        carId: car._id,
-        startDate,
-        endDate,
-      });
+      // Make the API request with the required headers
+      await API.post(
+        "/api/bookings",
+        {
+          carId: car._id,
+          startDate,
+          endDate,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
       setMessage("Booking successful!");
+      closeModal(); // Close the modal after successful booking
     } catch (err) {
-      console.error(err);
+      // Log the full error to inspect the response
+      console.error(
+        "Booking failed with error:",
+        err.response ? err.response.data : err.message
+      );
       setMessage("Booking failed. Please try again.");
     }
   };

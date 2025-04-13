@@ -17,11 +17,16 @@ function Login() {
       const res = await axios.post(
         `${
           import.meta.env.VITE_API_URL || "http://localhost:5000"
-        }/api/auth/login`,
+        }api/auth/login`,
         { email, password }
       );
 
-      dispatch(setUser(res.data.user)); // Store user in Redux & localStorage
+      // Save JWT token to localStorage
+      localStorage.setItem("token", res.data.token);
+
+      // Dispatch user data to Redux (if you're using Redux for global state)
+      dispatch(setUser(res.data.user));
+
       alert(res.data.message);
       navigate("/dashboard");
     } catch (err) {
