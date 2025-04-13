@@ -1,5 +1,5 @@
 import { useState } from "react";
-import axios from "axios";
+import API from "../api"; // Import the API instance
 import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { setUser } from "../redux/authSlice";
@@ -13,18 +13,11 @@ function Login() {
   const handleLogin = async (e) => {
     e.preventDefault();
     try {
-      // Use dynamic API base URL for both development and production
-      const res = await axios.post(
-        `${
-          import.meta.env.VITE_API_URL || "http://localhost:5000"
-        }api/auth/login`,
-        { email, password }
-      );
+      const res = await API.post("/api/auth/login", { email, password });
 
       // Save JWT token to localStorage
       localStorage.setItem("token", res.data.token);
 
-      // Dispatch user data to Redux (if you're using Redux for global state)
       dispatch(setUser(res.data.user));
 
       alert(res.data.message);
