@@ -17,7 +17,8 @@ function Navbar() {
       <div className="container mx-auto px-4 py-4 flex justify-between items-center">
         <Link
           to="/"
-          className="text-lg font-bold flex items-center gap-2 text-white">
+          className="text-2xl flex items-center gap-2 text-white"
+          style={{ fontFamily: "Bebas Neue, sans-serif" }}>
           <span>P2PCarSharing</span>
         </Link>
 
@@ -27,18 +28,21 @@ function Navbar() {
             <>
               <Link
                 to="/dashboard"
-                className="text-sm font-medium hover:text-blue-400 transition duration-200">
+                className="text-xl hover:text-blue-400 transition duration-200"
+                style={{ fontFamily: "Bebas Neue, sans-serif" }}>
                 Dashboard
               </Link>
               <Link
-                to="/messages"
-                className="text-sm font-medium hover:text-blue-400 transition duration-200">
-                Messages
+                to="/bookings"
+                className="text-xl hover:text-blue-400 transition duration-200"
+                style={{ fontFamily: "Bebas Neue, sans-serif" }}>
+                Bookings
               </Link>
               <Link
-                to="/bookings"
-                className="text-sm font-medium hover:text-blue-400 transition duration-200">
-                Bookings
+                to="/messages"
+                className="text-xl hover:text-blue-400 transition duration-200"
+                style={{ fontFamily: "Bebas Neue, sans-serif" }}>
+                Messages
               </Link>
 
               {/* Logout */}
