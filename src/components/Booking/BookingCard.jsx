@@ -32,7 +32,7 @@ const BookingCard = ({ booking, onCancel }) => {
           )}
           <button
             onClick={() => onCancel(booking._id)}
-            className="px-3 py-2 bg-red-500 hover:bg-red-600 text-white text-sm rounded mt-2">
+            className="w-full py-2 font-bold bg-red-500 hover:bg-red-600 text-white text-sm rounded mt-2 block text-center">
             Cancel Booking
           </button>
         </div>
