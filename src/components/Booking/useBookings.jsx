@@ -23,19 +23,14 @@ const useBookings = () => {
   };
 
   const cancelBooking = async (bookingId) => {
-    if (!window.confirm("Are you sure you want to cancel this booking?"))
-      return;
-
     try {
       const token = localStorage.getItem("token");
-      await API.put(
-        `/api/bookings/${bookingId}/remove-car`,
-        {},
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
-      );
-      await fetchBookings();
+      // Change PUT to DELETE here
+      await API.delete(`/api/bookings/${bookingId}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      await fetchBookings(); // Refresh the list of bookings after canceling
+      toast.success("Booking cancelled successfully");
     } catch (err) {
       console.error("Cancel booking error:", err);
       toast.error("Failed to cancel booking.");

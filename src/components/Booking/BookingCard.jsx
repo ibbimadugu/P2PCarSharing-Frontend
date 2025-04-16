@@ -46,7 +46,7 @@ const BookingCard = ({ booking, onCancel }) => {
           Date: {new Date(booking.startDate).toLocaleDateString("en-GB")}
         </p>
         <p className="text-sm">
-          Payment: {booking.paid ? "✅ Paid" : "❌ Pending"}
+          Payment: {booking.paid ? "✅ Paid" : " Not Paid"}
         </p>
 
         <div className="mt-3 items-center">

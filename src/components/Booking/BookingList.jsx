@@ -1,17 +1,11 @@
-import axios from "axios";
 import BookingCard from "./BookingCard";
 import { toast } from "react-hot-toast";
 
-// Create an axios instance with dynamic base URL
-const API_BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
-const API = axios.create({
-  baseURL: API_BASE_URL,
-  headers: {
-    Authorization: `Bearer ${localStorage.getItem("token")}`,
-  },
-});
+const BookingList = ({ bookings, onCancel }) => {
+  const handlePaymentSuccess = () => {
+    toast.success("Payment successful"); // Optionally, trigger a reload or refetch in parent
+  };
 
-const BookingList = ({ bookings, setBookings }) => {
   const handleCancel = async (bookingId) => {
     try {
       const confirmed = window.confirm(
@@ -19,16 +13,22 @@ const BookingList = ({ bookings, setBookings }) => {
       );
       if (!confirmed) return;
 
-      await API.delete(`/api/bookings/${bookingId}`);
+      const booking = bookings.find((b) => b._id === bookingId);
+      if (booking?.paid) {
+        toast.error("You cannot cancel a paid booking.");
+        return;
+      }
 
-      setBookings((prev) => prev.filter((b) => b._id !== bookingId));
-      toast.success("Booking cancelled successfully");
+      await onCancel(bookingId); // Use prop function to trigger cancellation in parent
     } catch (error) {
       console.error("Cancel booking error:", error);
-      toast.error("Failed to cancel booking");
+      toast.error("Failed to cancel booking.");
     }
   };
 
+  if (!bookings || bookings.length === 0) {
+    return <p className="text-gray-600">No bookings found.</p>;
+  }
   return (
     <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
       {bookings.map((booking) => (
@@ -36,6 +36,7 @@ const BookingList = ({ bookings, setBookings }) => {
           key={booking._id}
           booking={booking}
           onCancel={handleCancel}
+          onPaymentSuccess={handlePaymentSuccess}
         />
       ))}
     </div>

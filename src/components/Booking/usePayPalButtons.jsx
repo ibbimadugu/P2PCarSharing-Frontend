@@ -14,70 +14,78 @@ const loadPayPalScript = (clientId) => {
   });
 };
 
-const token = localStorage.getItem("token");
-
-const usePayPalButtons = (booking, buttonRef) => {
+const usePayPalButtons = (booking, buttonRef, handlePaymentSuccess) => {
   useEffect(() => {
+    if (!booking || !buttonRef?.current || booking.paid) return;
+
+    const token = localStorage.getItem("token");
     let paypalButtons = null;
 
     const renderButtons = async () => {
-      if (booking.paid || !buttonRef.current) return; // Check if booking is paid or buttonRef is null
-
       try {
         const res = await fetch("/api/config/paypal");
-        if (!res.ok) {
-          throw new Error("Failed to fetch PayPal config");
-        }
+        if (!res.ok) throw new Error("Failed to fetch PayPal config");
 
         const { clientId } = await res.json();
         await loadPayPalScript(clientId);
 
-        buttonRef.current.innerHTML = ""; // Clear previous PayPal buttons to avoid duplicates
+        buttonRef.current.innerHTML = "";
 
         paypalButtons = window.paypal.Buttons({
           createOrder: () =>
             fetch("/api/payments/create-order", {
               method: "POST",
-              headers: { "Content-Type": "application/json" },
-              Authorization: `Bearer ${token}`,
+              headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${token}`,
+              },
               body: JSON.stringify({ bookingId: booking._id }),
             })
-              .then((res) => res.json())
+              .then((res) => {
+                if (!res.ok) throw new Error("Failed to create order");
+                return res.json();
+              })
               .then((data) => data.orderID),
 
           onApprove: (data) =>
             fetch("/api/payments/capture-order", {
               method: "POST",
-              headers: { "Content-Type": "application/json" },
+              headers: {
+                "Content-Type": "application/json",
+              },
               body: JSON.stringify({
                 orderID: data.orderID,
                 bookingId: booking._id,
               }),
-            }).then(() => {
+            }).then((res) => {
+              if (!res.ok) throw new Error("Payment capture failed");
               toast.success("Payment successful!");
+
+              if (handlePaymentSuccess) {
+                handlePaymentSuccess(booking._id); // 💡 Remove from UI
+              }
             }),
         });
 
-        // Only render the PayPal button if the container is still available
         if (buttonRef.current) {
           paypalButtons.render(buttonRef.current);
         }
       } catch (error) {
-        console.error("Failed to load PayPal buttons:", error);
+        console.error("PayPal integration error:", error);
+        toast.error("Something went wrong with PayPal.");
       }
     };
 
     renderButtons();
 
-    // Cleanup on component unmount or when `booking` or `buttonRef` changes
     return () => {
       if (paypalButtons?.close) {
-        paypalButtons.close().catch(() => {
-          console.warn("PayPal button close failed.");
-        });
+        paypalButtons
+          .close()
+          .catch(() => console.warn("Failed to close PayPal buttons"));
       }
     };
-  }, [booking, buttonRef]);
+  }, [booking, buttonRef, handlePaymentSuccess]);
 };
 
 export default usePayPalButtons;
