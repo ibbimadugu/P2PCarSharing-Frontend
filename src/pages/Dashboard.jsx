@@ -1,52 +1,51 @@
 import React, { useEffect, useState } from "react";
 import API from "../api";
 import BookingForm from "../components/BookingForm";
+import AddCarModal from "../components/AddCarModal";
 
 function Dashboard() {
   const [cars, setCars] = useState([]);
   const [showModal, setShowModal] = useState(false);
+  const [showAddCarModal, setShowAddCarModal] = useState(false);
   const [selectedCar, setSelectedCar] = useState(null);
+
+  const fetchCars = async () => {
+    try {
+      const res = await API.get("/api/cars");
+      setCars(res.data);
+    } catch (error) {
+      console.error("Error fetching cars:", error);
+    }
+  };
+
   useEffect(() => {
-    const fetchCars = async () => {
-      try {
-        // Retrieve token from localStorage
-        const token = localStorage.getItem("token");
-
-        // Make API call with Authorization header
-        const res = await API.get("/api/cars", {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-
-        setCars(res.data);
-      } catch (error) {
-        console.error("Error fetching cars:", error);
-      }
-    };
-
     fetchCars();
   }, []);
 
-  // Handle booking button click, set selected car and show modal
   const handleBook = (car) => {
     setSelectedCar(car);
     setShowModal(true);
   };
 
-  // Close modal
   const closeModal = () => {
     setShowModal(false);
-    setSelectedCar(null); // Reset selected car when modal is closed
+    setSelectedCar(null);
   };
 
   return (
     <div className="px-6 py-10 bg-gray-100 min-h-screen">
-      <h1
-        className="text-2xl mb-8 text-gray-800 pl-2"
-        style={{ fontFamily: "Bebas Neue, sans-serif" }}>
-        Available Cars for Rent
-      </h1>
+      <div className="flex justify-between items-center mb-8">
+        <h1
+          className="text-2xl text-gray-800"
+          style={{ fontFamily: "Bebas Neue, sans-serif" }}>
+          Available Cars for Rent
+        </h1>
+        <button
+          onClick={() => setShowAddCarModal(true)}
+          className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg shadow">
+          + Add Car
+        </button>
+      </div>
 
       <div className="grid lg:grid-cols-3 md:grid-cols-2 grid-cols-1 gap-8">
         {cars.length > 0 ? (
@@ -61,7 +60,7 @@ function Dashboard() {
               />
               <div className="p-5">
                 <h2
-                  className="text-2xl  text-gray-800"
+                  className="text-2xl text-gray-800"
                   style={{ fontFamily: "Bebas Neue, sans-serif" }}>
                   {car.title}
                 </h2>
@@ -85,7 +84,7 @@ function Dashboard() {
         )}
       </div>
 
-      {/* Modal overlay for booking form */}
+      {/* Booking Modal */}
       {showModal && (
         <div className="fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50 z-50">
           <div className="bg-white rounded-lg shadow-lg p-6 w-96">
@@ -95,6 +94,14 @@ function Dashboard() {
             <BookingForm car={selectedCar} closeModal={closeModal} />
           </div>
         </div>
+      )}
+
+      {/* Add Car Modal */}
+      {showAddCarModal && (
+        <AddCarModal
+          closeModal={() => setShowAddCarModal(false)}
+          onCarAdded={fetchCars}
+        />
       )}
     </div>
   );
