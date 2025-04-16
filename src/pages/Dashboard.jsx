@@ -49,34 +49,50 @@ function Dashboard() {
 
       <div className="grid lg:grid-cols-3 md:grid-cols-2 grid-cols-1 gap-8">
         {cars.length > 0 ? (
-          cars.map((car) => (
-            <div
-              key={car._id}
-              className="bg-white rounded-2xl shadow-md overflow-hidden">
-              <img
-                src={`https://p2pcarsharing-backend.onrender.com${car.image}`}
-                alt={car.title}
-                className="w-full h-48 object-cover"
-              />
-              <div className="p-5">
-                <h2
-                  className="text-2xl text-gray-800"
-                  style={{ fontFamily: "Bebas Neue, sans-serif" }}>
-                  {car.title}
-                </h2>
-                <p className="text-gray-600 mt-1">
-                  Price: ₦{car.pricePerDay}/day
-                </p>
-                <p className="text-gray-600">Location: {car.location}</p>
-                <p className="text-gray-600">Owner: {car.owner}</p>
-                <button
-                  onClick={() => handleBook(car)}
-                  className="mt-4 w-full py-2 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition-colors duration-300">
-                  Book Now
-                </button>
+          cars.map((car) => {
+            const API_BASE_URL = import.meta.env.VITE_API_URL.replace(
+              /\/+$/,
+              ""
+            );
+            const imagePath = car.image.startsWith("/")
+              ? car.image
+              : `/${car.image}`;
+            const primaryImage = `${API_BASE_URL}${imagePath}`;
+            const fallbackImage = `http://localhost:5000${imagePath}`;
+
+            return (
+              <div
+                key={car._id}
+                className="bg-white rounded-2xl shadow-md overflow-hidden">
+                <img
+                  src={primaryImage}
+                  onError={(e) => {
+                    e.target.onerror = null; // prevent infinite loop
+                    e.target.src = fallbackImage;
+                  }}
+                  alt={car.title}
+                  className="w-full h-48 object-cover"
+                />
+                <div className="p-5">
+                  <h2
+                    className="text-2xl text-gray-800"
+                    style={{ fontFamily: "Bebas Neue, sans-serif" }}>
+                    {car.title}
+                  </h2>
+                  <p className="text-gray-600 mt-1">
+                    Price: ${car.pricePerDay}/day
+                  </p>
+                  <p className="text-gray-600">Location: {car.location}</p>
+                  <p className="text-gray-600">Owner: {car.owner}</p>
+                  <button
+                    onClick={() => handleBook(car)}
+                    className="mt-4 w-full py-2 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition-colors duration-300">
+                    Book Now
+                  </button>
+                </div>
               </div>
-            </div>
-          ))
+            );
+          })
         ) : (
           <p className="text-center text-lg text-gray-600 col-span-full">
             No cars available at the moment.

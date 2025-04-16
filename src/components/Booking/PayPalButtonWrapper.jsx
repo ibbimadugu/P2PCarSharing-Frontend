@@ -1,4 +1,5 @@
 import { useEffect, useRef } from "react";
+import { toast } from "react-hot-toast";
 
 const loadPayPalScript = (clientId) => {
   return new Promise((resolve, reject) => {
@@ -47,7 +48,7 @@ const PayPalButtonWrapper = ({ booking }) => {
 
             onApprove: async (_data, actions) => {
               const details = await actions.order.capture();
-              alert(
+              toast.success(
                 "Transaction completed by " + details.payer.name.given_name
               );
             },

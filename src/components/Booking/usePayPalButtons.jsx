@@ -1,4 +1,5 @@
 import { useEffect } from "react";
+import toast from "react-hot-toast";
 
 const loadPayPalScript = (clientId) => {
   return new Promise((resolve, reject) => {
@@ -53,7 +54,7 @@ const usePayPalButtons = (booking, buttonRef) => {
                 bookingId: booking._id,
               }),
             }).then(() => {
-              alert("Payment successful!");
+              toast.success("Payment successful!");
             }),
         });
 

@@ -11,6 +11,7 @@ import Checkout from "./pages/Checkout";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 import ProtectedRoute from "./components/ProtectedRoute";
+import { Toaster } from "react-hot-toast";
 
 function App() {
   const location = useLocation();
@@ -24,6 +25,7 @@ function App() {
     <div className="min-h-screen flex flex-col">
       {showNavbarAndFooter && <Navbar />}
       <div className="flex-grow">
+        <Toaster position="top-right" reverseOrder={false} />
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/login" element={<Login />} />

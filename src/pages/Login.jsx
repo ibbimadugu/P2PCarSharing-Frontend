@@ -1,8 +1,9 @@
 import { useState } from "react";
-import API from "../api"; // Import the API instance
+import API from "../api";
 import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { setUser } from "../redux/authSlice";
+import { toast } from "react-hot-toast"; // ✅ Import toast
 
 function Login() {
   const [email, setEmail] = useState("");
@@ -15,15 +16,13 @@ function Login() {
     try {
       const res = await API.post("/api/auth/login", { email, password });
 
-      // Save JWT token to localStorage
       localStorage.setItem("token", res.data.token);
-
       dispatch(setUser(res.data.user));
 
-      alert(res.data.message);
+      toast.success(res.data.message || "Login successful"); // ✅ Use toast
       navigate("/dashboard");
     } catch (err) {
-      alert(err.response?.data?.message || "Login failed");
+      toast.error(err.response?.data?.message || "Login failed"); // ✅ Use toast
     }
   };
 

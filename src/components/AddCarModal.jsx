@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import API from "../api";
+import { toast } from "react-hot-toast";
 
 function AddCarModal({ closeModal }) {
   const [formData, setFormData] = useState({
@@ -27,15 +28,22 @@ function AddCarModal({ closeModal }) {
     }
 
     try {
-      const res = await API.post("/api/cars", data, {
+      await API.post("/api/cars", data, {
         headers: {
           "Content-Type": "multipart/form-data",
         },
       });
-      console.log("Car added:", res.data);
+
+      toast.success("Car added successfully!");
       closeModal();
+
+      // Refresh the page after a short delay to allow UI updates
+      setTimeout(() => {
+        window.location.reload();
+      }, 1000);
     } catch (error) {
       console.error("Failed to add car:", error);
+      toast.error("Failed to add car. Please try again.");
     }
   };
 

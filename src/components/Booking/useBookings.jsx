@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import API from "../../api";
+import { toast } from "react-hot-toast";
 
 const useBookings = () => {
   const [bookings, setBookings] = useState([]);
@@ -37,7 +38,7 @@ const useBookings = () => {
       await fetchBookings();
     } catch (err) {
       console.error("Cancel booking error:", err);
-      alert("Failed to cancel booking.");
+      toast.error("Failed to cancel booking.");
     }
   };
 

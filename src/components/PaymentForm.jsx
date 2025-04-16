@@ -1,17 +1,17 @@
 import React, { useState, useEffect } from "react";
 import API from "../api";
+import { toast } from "react-hot-toast";
 
 function PaymentForm({ bookingId }) {
-  const [amount, setAmount] = useState(0); // Initialize state for amount
-  const [paymentStatus, setPaymentStatus] = useState(null); // State to track payment status
+  const [amount, setAmount] = useState(0);
+  const [paymentStatus, setPaymentStatus] = useState(null);
 
-  // Fetch the payment amount from the API (you can customize this part based on your backend)
   useEffect(() => {
     const fetchAmount = async () => {
       try {
         const res = await API.get(`/bookings/${bookingId}`);
         if (res.data) {
-          setAmount(res.data.totalPrice); // Update amount based on fetched data
+          setAmount(res.data.totalPrice);
         }
       } catch (err) {
         console.error("Error fetching booking details:", err);
@@ -24,12 +24,12 @@ function PaymentForm({ bookingId }) {
   const handlePayment = async () => {
     try {
       await API.post("/payments", { bookingId });
-      setPaymentStatus("success"); // Update payment status on success
-      alert("Payment successful!");
+      setPaymentStatus("success");
+      toast.success("Payment successful! 🎉");
     } catch (err) {
       console.error("Payment error:", err);
-      setPaymentStatus("failed"); // Update payment status on failure
-      alert("Payment failed. Please try again.");
+      setPaymentStatus("failed");
+      toast.error("Payment failed. Please try again.");
     }
   };
 
@@ -58,4 +58,4 @@ function PaymentForm({ bookingId }) {
   );
 }
 
-export default PaymentForm; // Ensure the component is exported
+export default PaymentForm;

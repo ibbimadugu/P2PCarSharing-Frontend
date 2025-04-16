@@ -1,6 +1,7 @@
 import { useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import { toast } from "react-hot-toast"; // ✅ Import toast
 
 function Register() {
   const [form, setForm] = useState({ name: "", email: "", password: "" });
@@ -12,17 +13,17 @@ function Register() {
   const handleRegister = async (e) => {
     e.preventDefault();
     try {
-      // Use dynamic API base URL for both development and production
       const res = await axios.post(
         `${
-          import.meta.env.VITE_API_URL || "http://localhost:5000"
+          import.meta.env.VITE_API_URL || "http://localhost:5000/"
         }api/auth/register`,
         form
       );
-      alert(res.data.message);
+
+      toast.success(res.data.message || "Registration successful"); // ✅ Show success toast
       navigate("/login");
     } catch (err) {
-      alert(err.response?.data?.message || "Registration failed");
+      toast.error(err.response?.data?.message || "Registration failed"); // ✅ Show error toast
     }
   };
 
